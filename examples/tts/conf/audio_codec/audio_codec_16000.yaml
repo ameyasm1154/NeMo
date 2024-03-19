@@ -92,13 +92,13 @@ model:
     log_epochs: [1, 2, 3, 4, 5, 6]
     epoch_frequency: 1
     log_tensorboard: false
-    log_wandb: true
+    log_wandb: false
 
     generators:
       - _target_: nemo.collections.tts.parts.utils.callbacks.AudioCodecArtifactGenerator
         log_audio: true
-        log_encoding: true
-        log_dequantized: true
+        log_encoding: false
+        log_dequantized: false
 
     dataset:
       _target_: nemo.collections.tts.data.vocoder_dataset.VocoderDataset
