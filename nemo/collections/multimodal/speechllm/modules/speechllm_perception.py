@@ -77,12 +77,19 @@ class AudioPerceptionModel(NeuralModule, Exportable):
             self.encoder = ConformerMultiLayerFeatureExtractor(cfg=cfg.multi_layer_feat, encoder=self.encoder)
             if cfg.multi_layer_feat.aggregator.mode == "cat":
                 with open_dict(cfg.modality_adapter):
-                    if "feat_in" in cfg.modality_adapter:
+                    if "feat_in" in cfg.modality_adapter:  # e.g., conformer encoder
                         cfg.modality_adapter.feat_in = cfg.modality_adapter.feat_in * len(
                             cfg.multi_layer_feat.layer_idx_list
                         )
                     if "input_dim" in cfg.modality_adapter:
                         cfg.modality_adapter.input_dim = cfg.modality_adapter.input_dim * len(
+                            cfg.multi_layer_feat.layer_idx_list
+                        )
+                    if "hidden_size" in cfg.modality_adapter:  # e.g., transformer encoder
+                        cfg.modality_adapter.hidden_size = cfg.modality_adapter.hidden_size * len(
+                            cfg.multi_layer_feat.layer_idx_list
+                        )
+                        cfg.modality_adapter.inner_size = cfg.modality_adapter.inner_size * len(
                             cfg.multi_layer_feat.layer_idx_list
                         )
 
@@ -91,8 +98,11 @@ class AudioPerceptionModel(NeuralModule, Exportable):
         else:
             self.spec_augmentation = None
         self.modality_adapter = self.from_config_dict(cfg.modality_adapter)
-        if 'output_dim' not in cfg.modality_adapter and "d_model" in cfg.modality_adapter:  # e.g., conformer encoder
-            self.proj = nn.Linear(cfg.modality_adapter.d_model, cfg.output_dim)
+        if 'output_dim' not in cfg.modality_adapter:
+            if "d_model" in cfg.modality_adapter:  # e.g., conformer encoder
+                self.proj = nn.Linear(cfg.modality_adapter.d_model, cfg.output_dim)
+            if "hidden_size" in cfg.modality_adapter:  # e.g., transformer encoder
+                self.proj = nn.Linear(cfg.modality_adapter.hidden_size, cfg.output_dim)
         else:
             self.proj = nn.Identity()
 

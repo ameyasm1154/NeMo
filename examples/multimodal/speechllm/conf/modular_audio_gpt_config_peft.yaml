@@ -143,7 +143,21 @@ model:
         pooling: "avg"  # ways to pool features if they have different temporal lengths and align_mode=min, choices=['mean', 'max', 'min']
         align_mode: "min"  # if features have different temporal lengths, set `min` to pool to the shortest length or `max` to repeat to the longest.
 
-    modality_adapter: 
+    modality_adapter:
+
+      # _target_: nemo.collections.nlp.modules.common.transformer.transformer_encoders.TransformerEncoder
+      # num_layers: 2
+      # hidden_size: 1024
+      # inner_size: 4096
+      # mask_future: False
+      # num_attention_heads: 8
+      # attn_score_dropout: 0.0
+      # attn_layer_dropout: 0.0
+      # ffn_dropout: 0.0
+      # hidden_act: "relu"
+      # pre_ln: False
+      # pre_ln_final_layer_norm: True
+
       _target_: nemo.collections.asr.modules.ConformerEncoder
       feat_in: 1024
       feat_out: -1 # you may set it if you need different output size other than the default d_model
